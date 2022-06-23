@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.PremierLeague.model.Arco;
 import it.polito.tdp.PremierLeague.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,7 +41,7 @@ public class FXMLController {
     private TextField txtMinuti; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbMese"
-    private ComboBox<?> cmbMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM1"
     private ComboBox<?> cmbM1; // Value injected by FXMLLoader
@@ -52,16 +54,65 @@ public class FXMLController {
 
     @FXML
     void doConnessioneMassima(ActionEvent event) {
+    	txtResult.clear();
+    	String minuti= this.txtMinuti.getText();
+    	int min;
+    	try {
+    		min= Integer.parseInt(minuti);
+    	}
+    	catch(NumberFormatException e) {
+    		throw new NumberFormatException("Inserire un numero ");
+    	}
     	
+    	if(min<0 || min>90) {
+    		txtResult.setText("INSERIRE UN MINUTAGGIO COMPRESO TRA 1 E 90 ESTREMI INCLUSI");
+    		return;
+    	}
+    	Integer mese= this.cmbMese.getValue();
+    	if(mese==null) {
+    		txtResult.setText("SELEZIONARE UN MESE DALL'APPOSITA TENDINA");
+    		return;
+    	}
+    	
+    	List<Arco> archi= this.model.getArchiMaggiori(mese, min);
+    	for(Arco a : archi) {
+    		txtResult.appendText(a.toString()+"\n");
+    	}
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	txtResult.clear();
+    	String minuti= this.txtMinuti.getText();
+    	int min;
+    	try {
+    		min= Integer.parseInt(minuti);
+    	}
+    	catch(NumberFormatException e) {
+    		throw new NumberFormatException("Inserire un numero ");
+    	}
+    	
+    	if(min<0 || min>90) {
+    		txtResult.setText("INSERIRE UN MINUTAGGIO COMPRESO TRA 1 E 90 ESTREMI INCLUSI");
+    		return;
+    	}
+    	Integer mese= this.cmbMese.getValue();
+    	if(mese==null) {
+    		txtResult.setText("SELEZIONARE UN MESE DALL'APPOSITA TENDINA");
+    		return;
+    	}
+    	
+    	this.model.creaGrafo(mese,min);
+    	txtResult.appendText("GRAFO CREATO \n");
+    	txtResult.appendText("Numero vertici : "+this.model.nVertici()+"\n");
+    	txtResult.appendText("Numero archi : "+this.model.nArchi());
     	
     }
 
     @FXML
     void doCollegamento(ActionEvent event) {
+    	
+    	
     	
     }
 
@@ -79,6 +130,9 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	for(int i=1; i<=12; i++) {
+    		this.cmbMese.getItems().add(i);
+    	}
   
     }
     
